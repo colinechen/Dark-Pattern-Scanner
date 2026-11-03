@@ -1,0 +1,9 @@
+{
+  "manifest_version": 3,
+  "name": "Dark Pattern Scanner",
+  "version": "0.0.1",
+  "description": "Browsererweiterung zur Analyse von Dark Patterns – Bachelorarbeit",
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
