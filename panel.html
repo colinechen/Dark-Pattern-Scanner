@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <title>Dark Pattern Scanner</title>
+  </head>
+  <body style="font-family: sans-serif; padding: 8px;">
+    <h1 style="font-size: 16px;">Dark Pattern Scanner</h1>
+    <button id="scanButton">Seite scannen</button>
+    <p id="zeitpunkt" style="color: gray; font-size: 12px;"></p>
+
+    <h2 style="font-size: 14px;">Befunde</h2>
+    <div id="befundListe"></div>
+
+    <details style="margin-top: 16px;">
+      <summary id="ergebnis">Alle Bedienelemente</summary>
+      <ul id="liste" style="list-style: none; padding: 0;"></ul>
+    </details>
+
+    <script src="panel.js"></script>
+  </body>
+</html>
