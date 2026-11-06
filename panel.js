@@ -10,6 +10,8 @@ const liste = document.getElementById('liste');
 
 // Wenn auf den Knopf geklickt wird ...
 scanButton.addEventListener('click', async () => {
+  scanButton.disabled = true;
+  scanButton.textContent = 'Scanne …';
   try {
     // 1. Den aktuell geöffneten Tab finden
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -33,11 +35,13 @@ scanButton.addEventListener('click', async () => {
     const elemente = [];
     const befunde = [];
     let versteckt = 0;
+    let bannerGefunden = false;
     for (const antwort of antworten) {
       if (!antwort.result) continue;
       elemente.push(...antwort.result.elemente);
       befunde.push(...antwort.result.befunde);
       versteckt += antwort.result.versteckt;
+      if (antwort.result.bannerGefunden) bannerGefunden = true;
     }
 
     // 4. Zeitpunkt anzeigen
@@ -47,9 +51,10 @@ scanButton.addEventListener('click', async () => {
 
     // 5. Befunde anzeigen
     befundListe.textContent = '';
-    if (befunde.length === 0) {
-      befundListe.textContent = 'Kein Cookie-Banner gefunden.';
-    }
+    const bannerHinweis = document.createElement('p');
+    bannerHinweis.style.cssText = 'font-size:12px;color:gray;margin:0 0 8px;';
+    bannerHinweis.textContent = `Cookie-Banner gefunden: ${bannerGefunden ? 'ja' : 'nein'} · ${befunde.length} Einträge`;
+    befundListe.appendChild(bannerHinweis);
     for (const befund of befunde) {
       befundListe.appendChild(befundKarteErstellen(befund));
     }
@@ -65,12 +70,15 @@ scanButton.addEventListener('click', async () => {
     }
   } catch (fehler) {
     befundListe.textContent = 'Diese Seite kann nicht gescannt werden: ' + fehler.message;
+  } finally {
+    scanButton.disabled = false;
+    scanButton.textContent = 'Seite scannen';
   }
 });
 
 // Baut eine Karte für einen Befund
 function befundKarteErstellen(befund) {
-  const farben = { Befund: '#e5007d', Grenzfall: '#e08a00', 'kein Befund': '#999' };
+  const farben = { Befund: '#e5007d', Grenzfall: '#e08a00', 'kein Befund': '#999', 'nicht bewertet': '#999' };
 
   const karte = document.createElement('div');
   karte.style.cssText =
@@ -82,11 +90,12 @@ function befundKarteErstellen(befund) {
   karte.appendChild(titel);
 
   const zeilen = [
+    ['Beleg', befund.beleg],
     ['Zustimmen', befund.zustimmen],
-    ['Ablehnen', befund.ablehnen || '– nicht auf erster Ebene –'],
+    ['Ablehnen', befund.zustimmen ? befund.ablehnen || '– nicht auf erster Ebene –' : null],
     ['Abo-Option', befund.abo],
     ['Einstellungen', befund.einstellungen],
-    ['Mechanismus', befund.status === 'kein Befund' ? null : befund.mechanismus],
+    ['Mechanismus', befund.status === 'Befund' || befund.status === 'Grenzfall' ? befund.mechanismus : null],
     ['Quelle', befund.eingebettet ? `eingebettet von ${befund.quelle}` : null]
   ];
   for (const [bezeichnung, wert] of zeilen) {
