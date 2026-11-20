@@ -7,16 +7,35 @@
   <body style="font-family: sans-serif; padding: 8px;">
     <h1 style="font-size: 16px;">Dark Pattern Scanner</h1>
     <button id="scanButton">Seite scannen</button>
+    <button id="kiButton">KI-Analyse</button>
+    <label style="display: block; font-size: 12px; margin-top: 6px;">
+      <input type="checkbox" id="screenshotHaken" checked> Screenshot an die KI mitsenden
+    </label>
     <p id="zeitpunkt" style="color: gray; font-size: 12px;"></p>
 
-    <h2 style="font-size: 14px;">Befunde</h2>
+    <h2 style="font-size: 14px;">Befunde aus den Regeln</h2>
     <div id="befundListe"></div>
+
+    <h2 style="font-size: 14px;">Befunde der KI</h2>
+    <p id="kiStatus" style="color: gray; font-size: 12px;"></p>
+    <div id="kiListe"></div>
 
     <details style="margin-top: 16px;">
       <summary id="ergebnis">Alle Bedienelemente</summary>
       <ul id="liste" style="list-style: none; padding: 0;"></ul>
     </details>
 
+    <details id="einstellungen" style="margin-top: 16px; font-size: 13px;">
+      <summary>Einstellungen</summary>
+      <label for="apiKey" style="display: block; margin-top: 6px;">API-Key</label>
+      <input type="password" id="apiKey" placeholder="sk-ant-…" style="width: 100%;">
+      <label for="modell" style="display: block; margin-top: 6px;">Modell (leer = claude-sonnet-5-5)</label>
+      <input type="text" id="modell" placeholder="claude-sonnet-5-5" style="width: 100%;">
+      <button id="speichernButton" style="margin-top: 6px;">Speichern</button>
+      <p style="color: gray; font-size: 11px;">Der Key wird nur in diesem Browser gespeichert und nur an die Claude-API geschickt.</p>
+    </details>
+
+    <script src="ki.js"></script>
     <script src="panel.js"></script>
   </body>
 </html>

@@ -235,8 +235,11 @@
       `background:${farbe};color:#fff;font:bold 11px/18px sans-serif;padding:0 6px;` +
       'border-radius:3px;z-index:2147483647;pointer-events:none;';
     document.body.appendChild(etikett);
-    window.__dpMarkierungen.push({ element: el, alterRahmen: el.style.outline, etikett });
-    el.style.outline = `3px ${gestrichelt ? 'dashed' : 'solid'} ${farbe}`;
+    const neuerRahmen = `3px ${gestrichelt ? 'dashed' : 'solid'} ${farbe}`;
+    // alter und neuer Rahmen werden gespeichert, damit das Panel die Markierungen
+    // vor dem Screenshot für die KI kurz ausblenden kann
+    window.__dpMarkierungen.push({ element: el, alterRahmen: el.style.outline, neuerRahmen, etikett });
+    el.style.outline = neuerRahmen;
   }
 
   // ============================================================
@@ -455,7 +458,8 @@
       ablehnen: ablehnen ? ablehnen.daten.text : null,
       abo: bezahlen ? bezahlen.daten.text : null,
       einstellungen: einstellungen ? einstellungen.daten.text : null,
-      mechanismus: 'Cognitive Ease',
+      mechanismus: 'Framing Effect',
+      nebenmechanismus: 'Kognitive Leichtigkeit',
       quelle: location.hostname,
       eingebettet: window !== window.top
     });
@@ -495,7 +499,7 @@
       ],
       hinweise: [],
       beleg: text,
-      mechanismus: 'Default-Effekt',
+      mechanismus: 'Default Effect',
       quelle: location.hostname,
       eingebettet: window !== window.top
     });
@@ -538,7 +542,8 @@
       merkmale: ['Timer zählt sichtbar herunter (in 1,5 Sekunden gemessen)'],
       hinweise: ['Echtheit nicht überprüfbar'],
       beleg: beleg.replace(/([A-Za-zÄÖÜäöüß])(\d)/g, '$1 $2').slice(0, 150), // „in01:19“ → „in 01:19“
-      mechanismus: 'Verlustaversion',
+      mechanismus: 'Scarcity Bias',
+      nebenmechanismus: 'Verlustaversion',
       quelle: location.hostname,
       eingebettet: window !== window.top
     });
@@ -562,7 +567,8 @@
       merkmale: ['Zeitdruck-Formulierung ohne konkrete Frist'],
       hinweise: ['Echtheit nicht überprüfbar'],
       beleg: umgebung.slice(0, 150),
-      mechanismus: 'Verlustaversion',
+      mechanismus: 'Scarcity Bias',
+      nebenmechanismus: 'Verlustaversion',
       quelle: location.hostname,
       eingebettet: window !== window.top
     });
@@ -576,6 +582,9 @@
     elemente: bedienelemente.map((b) => b.daten),
     versteckt,
     befunde,
-    bannerGefunden: banner.length > 0
+    bannerGefunden: banner.length > 0,
+    // Texte für die KI-Analyse: Seitentext nur aus der Hauptseite, Banner-Texte aus allen Frames
+    seitentext: window === window.top ? (document.body?.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 6000) : '',
+    bannerTexte: banner.map((b) => (b.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 3000))
   };
 })();
