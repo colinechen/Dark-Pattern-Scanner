@@ -190,12 +190,15 @@ function kiErgebnisAnzeigen(antwort) {
   }
   befunde.forEach((befund, i) => kiListe.appendChild(befundKarteErstellen(befund, `K${i + 1}`, 'KI')));
 
-  // Bewertung der Regel-Befunde in die jeweilige Karte schreiben
+  // Bewertung der Regel-Befunde in die jeweilige Karte schreiben –
+  // vorher alte Bewertungen aus einer früheren KI-Analyse entfernen
+  for (const alt of document.querySelectorAll('.ki-bewertung')) alt.remove();
   for (const bewertung of ki.bewertung_regeln || []) {
     const nummer = parseInt(String(bewertung.nr).replace(/\D/g, ''), 10);
     const karte = regelKarten[nummer - 1];
     if (!karte) continue;
     const zeile = document.createElement('div');
+    zeile.className = 'ki-bewertung';
     zeile.style.cssText = 'margin-top:6px;padding-top:6px;border-top:1px dashed #ccc;color:#2457c5;';
     zeile.textContent = `KI: ${bewertung.einschaetzung} – ${bewertung.begruendung || ''}`;
     karte.appendChild(zeile);
