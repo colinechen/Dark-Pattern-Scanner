@@ -93,7 +93,9 @@ async function scannen() {
 
   // 4. Anzeigen
   const adresse = new URL(tab.url);
-  zeitpunkt.textContent = `${adresse.hostname}${adresse.pathname} – ${scan.zeit.toLocaleTimeString('de-DE')}`;
+  zeitpunkt.textContent =
+    `${adresse.hostname}${adresse.pathname} – ` +
+    `${scan.zeit.toLocaleDateString('de-DE')}, ${scan.zeit.toLocaleTimeString('de-DE')}`;
 
   befundListe.textContent = '';
   kiListe.textContent = '';
@@ -155,6 +157,26 @@ kiButton.addEventListener('click', async () => {
     kiButton.disabled = false;
     scanButton.disabled = false;
   }
+});
+
+// ============================================================
+// Screenshot zur Dokumentation sichern (mit Markierungen, landet im Download-Ordner)
+// ============================================================
+const screenshotButton = document.getElementById('screenshotButton');
+screenshotButton.addEventListener('click', async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const bild = await chrome.tabs.captureVisibleTab(tab.windowId, { format: 'jpeg', quality: 85 });
+  const jetzt = new Date();
+  const zwei = (zahl) => String(zahl).padStart(2, '0');
+  // Ortszeit, z. B. 2026-11-20_1917
+  const zeitstempel = `${jetzt.getFullYear()}-${zwei(jetzt.getMonth() + 1)}-${zwei(jetzt.getDate())}_${zwei(jetzt.getHours())}${zwei(jetzt.getMinutes())}`;
+  const name = `${new URL(tab.url).hostname.replace(/^www\./, '')}_${zeitstempel}.jpg`;
+  const link = document.createElement('a');
+  link.href = bild;
+  link.download = name;
+  link.click();
+  screenshotButton.textContent = `Gesichert: ${name}`;
+  setTimeout(() => (screenshotButton.textContent = 'Screenshot sichern'), 4000);
 });
 
 // Blendet die Markierungen auf der Seite aus (false) oder wieder ein (true)
